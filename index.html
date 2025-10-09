@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Christian Studebaker — Portfolio</title>
+  <meta name="description" content="Architecture portfolio of Christian Studebaker." />
+  <meta property="og:title" content="Christian Studebaker — Portfolio" />
+  <meta property="og:description" content="Architecture portfolio of Christian Studebaker." />
+  <meta property="og:type" content="website" />
+  <!-- Lato font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#ffffff;--fg:#111;--muted:#888;--maxw:1240px;--gap:16px;--orange:#CC5500;--orange-dark:#B34C00}
+    @media (prefers-color-scheme: dark){:root{--bg:#0b0b0b;--fg:#f6f6f6;--muted:#b3b3b3}}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.5 'Lato',system-ui,-apple-system,Segoe UI,Inter,Roboto,Helvetica,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* HEADER — transparent grey, brand left, center ARCHITECTURE, tabs right */
+    header{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 14px;background:rgba(0,0,0,.25);backdrop-filter:saturate(140%) blur(3px)}
+    body.is-project header{padding:3px 12px;} /* half-height on project pages */
+    .brand{font-weight:800;letter-spacing:.2px;color:var(--orange-dark)}
+    nav{display:flex;align-items:center;gap:18px;margin-left:auto}
+    nav a, .menu-btn{color:var(--orange)}
+    nav a.active,.menu-btn.active{font-weight:700}
+
+    /* Centered ARCHITECTURE label */
+    .center-title{
+      position:absolute; left:50%; transform:translateX(-50%);
+      font-weight:800; letter-spacing:2px; color:var(--orange);
+      text-transform:uppercase; font-size:14px; pointer-events:none;
+    }
+
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:28px 20px 64px}
+
+    /* DROPDOWN */
+    .menu{position:relative}
+    .menu-btn{all:unset;cursor:pointer;color:var(--orange)}
+    .dropdown{position:absolute;top:140%;right:0;min-width:260px;background:rgba(255,255,255,.95);border:1px solid #e6e6e6;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:8px;display:none}
+    .dropdown a{display:block;padding:8px 10px;border-radius:8px;color:#111}
+    .dropdown a:hover{background:#f3f3f3}
+    @media (prefers-color-scheme: dark){.dropdown{background:rgba(20,20,20,.9);border-color:#2a2a2a}.dropdown a{color:#f3f3f3}.dropdown a:hover{background:#1a1a1a}}
+    .menu.open .dropdown{display:block}
+
+    /* HOME — full-bleed slideshow behind header */
+    .hero{position:relative;height:100dvh;width:100vw;left:50%;margin-left:-50vw;border-radius:0;overflow:hidden}
+    .slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease}
+    .slide.active{opacity:1}
+    .slide img{width:100%;height:100%;object-fit:cover;object-position:center}
+
+    /* PROJECT GRID — 3 columns, full-width, larger cards */
+    .grid{position:relative;left:50%;margin-left:-50vw;width:100vw;max-width:100vw;display:grid;gap:14px;justify-items:center;padding:0 12px}
+    @media (min-width: 1180px){ .grid{grid-template-columns: repeat(3, minmax(360px, 1fr));} }
+    @media (min-width: 760px) and (max-width:1179px){ .grid{grid-template-columns: repeat(2, minmax(360px, 1fr));} }
+    @media (max-width: 759px){ .grid{grid-template-columns: 1fr;} }
+
+    .card{width:360px;border:1px solid #e6e6e6;border-radius:10px;overflow:hidden;background:transparent}
+    @media (prefers-color-scheme: dark){.card{border-color:#2a2a2a}}
+    .thumb{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#eee}
+    .card-body{padding:12px 14px 16px}
+    .eyebrow{font-size:12px;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+    .title{display:block;font-size:18px;margin-top:6px;font-weight:700}
+    .meta{color:var(--muted);font-size:14px}
+
+    /* PROJECT VIEWER — black bg, natural aspect ratio */
+    .viewer{position:relative;width:100vw;left:50%;margin-left:-50vw;background:#000;border:none;border-radius:0;overflow:visible;padding-bottom:32px}
+    .viewer .frame{position:relative;display:flex;align-items:center;justify-content:center;background:#000;z-index:1}
+    .viewer img{width:auto;max-width:96vw;height:auto;display:block}
+
+    /* Overlay controls above image */
+    .controls{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;pointer-events:none;z-index:3}
+    .controls button{pointer-events:auto;all:unset;cursor:pointer;background:rgba(0,0,0,.55);color:#fff;padding:12px 16px;border-radius:999px;margin:0 10px}
+    /* Large hit zones on edges */
+    .hit{position:absolute;top:0;bottom:0;width:22vw;pointer-events:auto;z-index:4}
+    .hit.left{left:0}
+    .hit.right{right:0}
+
+    .dots{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;display:flex;gap:6px;z-index:4}
+    .dot{width:8px;height:8px;border-radius:50%;background:#bbb;opacity:.7}
+    .dot.active{background:#fff;opacity:1}
+
+    /* FOOTER — slim, orange text, left-aligned full width */
+    footer{background:transparent;color:var(--orange);font-size:14px;padding:4px 14px;text-align:left;width:100%;margin-top:28px}
+
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+    .muted{color:var(--muted)}
+    .divider{height:1px;background:#e6e6e6;margin:10px 0 14px}
+    @media (prefers-color-scheme: dark){.divider{background:#2a2a2a}}
+    @media print{header,nav,.grid,footer,.viewer,.hero{display:none}.wrap{padding:0}}
+  </style>
+</head>
+<body>
+  <!-- Header with centered ARCHITECTURE -->
+  <header>
+    <a href="#" class="brand">Christian Studebaker</a>
+    <div class="center-title">ARCHITECTURE</div>
+    <nav aria-label="Primary">
+      <div class="menu" id="projectsMenu">
+        <button class="menu-btn" id="projectsBtn">Projects ▾</button>
+        <div class="dropdown" id="projectsList" role="menu" aria-label="Projects"></div>
+      </div>
+      <a href="#about" data-nav="about">About</a>
+      <a href="#contact" data-nav="contact">Contact</a>
+    </nav>
+  </header>
+
+  <main id="app" tabindex="-1" aria-live="polite"></main>
+  <footer>© <span id="y"></span> Christian Studebaker</footer>
+
+  <script id="data" type="application/json">
+  {
+    "about": {
+      "headline": "Architectural designer focused on mass timber, deconstruction, and scrappy/clever reuse.",
+      "body": "MIT M.Arch candidate. Researching architectural grafting and material lifecycles. Based in Cambridge → Portland.",
+      "cvUrl": "#"
+    },
+    "contact": {
+      "email": "christianstudebaker@gmail.com",
+      "location": "Portland, OR (relocating)",
+      "links": []
+    },
+    "home": {
+      "images": [
+        "images/home/01.jpg",
+        "images/home/02.jpg",
+        "images/home/03.jpg",
+        "images/home/04.jpg",
+        "images/home/05.jpg",
+        "images/home/06.jpg"
+      ]
+    },
+    "projects": [
+      {
+        "slug": "kit-for-a-bit",
+        "title": "Kit for a Bit",
+        "role": "MIT Option Studio 2",
+        "year": "Fall 2024",
+        "location": "",
+        "thumbnail": "images/kit-for-a-bit/01.jpg",
+        "summary": "Modular, transportable recreational facility composed of human-scale parts; elevated framework with slotting assembly across terrains.",
+        "lead": "Repeating skeletal module with slide-in beams; extendable columns and bracing for slopes; replaceable components for non-permanent deployment.",
+        "theme": "#000000",
+        "images": [
+          "images/kit-for-a-bit/01.jpg",
+          "images/kit-for-a-bit/02.jpg",
+          "images/kit-for-a-bit/03.jpg",
+          "images/kit-for-a-bit/04.jpg"
+        ]
+      },
+      {
+        "slug": "waterfront-education-center",
+        "title": "Waterfront Education Center",
+        "role": "MIT Option Studio 1 (ARO)",
+        "year": "Spring 2024",
+        "location": "East Boston, MA",
+        "thumbnail": "images/waterfront-education-center/01.jpg",
+        "summary": "Primary school and community hub organized around a two-story greenhouse with branching mass timber columns.",
+        "lead": "Greenhouse as academic heart; bridges through canopy; operable timber-slat shades; boardwalk and piers extend learning to the waterfront.",
+        "theme": "#000000",
+        "images": [
+          "images/waterfront-education-center/01.jpg",
+          "images/waterfront-education-center/02.jpg",
+          "images/waterfront-education-center/03.jpg"
+        ]
+      },
+      {
+        "slug": "waterfront-long-house",
+        "title": "Waterfront Long House",
+        "role": "MIT Core 3",
+        "year": "Fall 2023",
+        "location": "",
+        "thumbnail": "images/waterfront-long-house/01.jpg",
+        "summary": "Longhouse integrating food systems, zero-waste practices, and community gathering, bridging park and commercial waterfront edges.",
+        "lead": "4x4 column clusters with 4" spacing allow girders to slide then bolt; columns route water/gutters and form 4" window gaps; nested thermal enclosure.",
+        "theme": "#000000",
+        "images": [
+          "images/waterfront-long-house/01.jpg",
+          "images/waterfront-long-house/02.jpg",
+          "images/waterfront-long-house/03.jpg",
+          "images/waterfront-long-house/04.jpg",
+          "images/waterfront-long-house/05.jpg"
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <script>
+    const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+    const app=document.getElementById('app');
+    document.getElementById('y').textContent=new Date().getFullYear();
+
+    // Robust JSON parse (prevents full blank if JSON has a typo)
+    let data = {};
+    try { data = JSON.parse(document.getElementById('data').textContent); }
+    catch (e) {
+      console.error('Data JSON parse error:', e);
+      data = { home:{images:[]}, projects:[], about:{}, contact:{} };
+    }
+
+    // Build Projects dropdown (Projects first; closes after click)
+    const menu=$('#projectsMenu'), btn=$('#projectsBtn'), list=$('#projectsList');
+    list.innerHTML=(data.projects||[]).map(p=>`<a href="#project/${p.slug}" role="menuitem">${p.title}</a>`).join('');
+    function toggleMenu(open){menu.classList.toggle('open',open);btn.classList.toggle('active',open);} 
+    btn.addEventListener('click',e=>{e.stopPropagation();toggleMenu(!menu.classList.contains('open'));});
+    document.addEventListener('click',e=>{if(!menu.contains(e.target)) toggleMenu(false)});
+    list.addEventListener('click',(e)=>{ if(e.target.closest('a')) toggleMenu(false); });
+
+    function route(){
+      const h=location.hash||'#';
+      document.body.classList.toggle('is-project', h.startsWith('#project/'));
+      if(h==='#'||h.startsWith('#home')) return renderHome();
+      if(h.startsWith('#project/')) return renderProject(h.split('/')[1]);
+      if(h==='#about') return renderAbout();
+      if(h==='#contact') return renderContact();
+      renderNotFound();
+    }
+
+    // HOME slideshow (preload + full-bleed) — NO visible arrows
+    let heroTimer=null, heroIndex=0, heroSlides=[]; 
+    const preload=url=>new Promise(res=>{const i=new Image(); i.onload=()=>res({ok:true,url}); i.onerror=()=>res({ok:false,url}); i.src=url;});
+    async function buildHeroSlides(){
+      const srcs=(data.home && Array.isArray(data.home.images) && data.home.images.length) ? data.home.images : (data.projects||[]).flatMap(p=>p.images||[]);
+      const results=await Promise.all(srcs.map(preload));
+      heroSlides=results.filter(r=>r.ok).map(r=>({src:r.url,title:'Portfolio'}));
+    }
+    async function renderHome(){
+      await buildHeroSlides();
+      if(!heroSlides.length){ app.innerHTML='<div class="wrap"><p class="muted">Add homepage images under <code>images/home/</code>.</p></div>'; return; }
+      const slides=heroSlides.map((s,i)=>`<div class="slide ${i===0?'active':''}"><img src="${s.src}" alt="${s.title} slide"/></div>`).join('');
+      app.innerHTML=`
+        <section class="hero" aria-label="Featured portfolio slideshow">
+          ${slides}
+        </section>
+        <div class="wrap"><div class="divider"></div></div>
+        <section class="grid" aria-label="Projects">
+          ${(data.projects||[]).map(p=>`
+            <article class="card">
+              <a href="#project/${p.slug}" aria-label="Open ${p.title}">
+                <img class="thumb" src="${p.thumbnail}" alt="${p.title} thumbnail" loading="lazy" />
+                <div class="card-body">
+                  <div class="eyebrow">${p.role} · ${p.year}</div>
+                  <span class="title">${p.title}</span>
+                  <div class="meta">${p.location||''}</div>
+                </div>
+              </a>
+            </article>
+          `).join('')}
+        </section>`;
+      const slidesEls=$$('.slide',app); 
+      function show(i){slidesEls.forEach((el,idx)=>el.classList.toggle('active',idx===i)); heroIndex=i;}
+      function next(){show((heroIndex+1)%slidesEls.length);} 
+      clearInterval(heroTimer); heroTimer=setInterval(next,5000);
+    }
+
+    // PROJECT viewer — black bg, natural ratio, bigger image, working arrows + hit zones
+    function renderProject(slug){
+      const p=(data.projects||[]).find(x=>x.slug===slug); if(!p) return renderNotFound(); document.body.style.background='#000'; const imgs=p.images||[];
+      app.innerHTML=`
+        <div class="wrap">
+          <a class="muted" href="#" style="display:inline-block;margin-bottom:8px">← All projects</a>
+          <div style="margin:10px 0 18px">
+            <h1 class="proj-title" style="margin:0;color:#fff">${p.title}</h1>
+            <p class="proj-sub" style="color:#ccc">${p.role} · ${p.year} ${p.location?('· '+p.location):''}</p>
+          </div>
+        </div>
+        <section class="viewer" aria-label="${p.title} image viewer">
+          <div class="frame"><img id="vImg" src="${imgs[0]||''}" alt="${p.title} image"/></div>
+          <div class="hit left" id="vHitPrev" aria-hidden="true"></div>
+          <div class="hit right" id="vHitNext" aria-hidden="true"></div>
+          <div class="controls">
+            <button id="vPrev" aria-label="Previous image">◀</button>
+            <button id="vNext" aria-label="Next image">▶</button>
+          </div>
+          <div class="dots" id="vDots"></div>
+        </section>`;
+      const imgEl=$('#vImg'), dots=$('#vDots'), bPrev=$('#vPrev'), bNext=$('#vNext'), hPrev=$('#vHitPrev'), hNext=$('#vHitNext');
+      let i=0; function paintDots(){dots.innerHTML=(imgs||[]).map((_,idx)=>`<span class="dot ${idx===i?'active':''}"></span>`).join('');}
+      function show(idx){ if(!imgs.length) return; i=(idx+imgs.length)%imgs.length; imgEl.src=imgs[i]; paintDots();}
+      [bNext,hNext].forEach(el=>el.addEventListener('click',()=>show(i+1)));
+      [bPrev,hPrev].forEach(el=>el.addEventListener('click',()=>show(i-1)));
+      imgEl.addEventListener('click',()=>show(i+1));
+      document.addEventListener('keydown',e=>{if(e.key==='ArrowRight') show(i+1); if(e.key==='ArrowLeft') show(i-1);});
+      paintDots();
+    }
+
+    function renderAbout(){document.body.style.background='var(--bg)'; app.innerHTML=`<div class="wrap"><h1>About</h1><p>${(data.about||{}).headline||''}</p><p class="muted">${(data.about||{}).body||''}</p><p><a class="pill" href="${(data.about||{}).cvUrl||'#'}">View CV</a></p></div>`}
+    function renderContact(){document.body.style.background='var(--bg)'; const c=data.contact||{}; app.innerHTML=`<div class="wrap"><h1>Contact</h1><p><a href="mailto:${c.email||''}">${c.email||''}</a></p><p class="muted">${c.location||''}</p></div>`}
+    function renderNotFound(){document.body.style.background='var(--bg)'; app.innerHTML=`<div class="wrap"><p>Page not found. <a href="#">Go home</a>.</p></div>`}
+
+    window.addEventListener('hashchange',route); window.addEventListener('DOMContentLoaded',route);
+  </script>
+</body>
+</html>
