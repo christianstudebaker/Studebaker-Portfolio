@@ -34,7 +34,7 @@
     .center-title{
       position:absolute; left:50%; transform:translateX(-50%);
       font-weight:800; letter-spacing:2px; color:var(--orange);
-      text-transform:uppercase; font-size:14px; pointer-events:none;
+      text-transform:uppercase; font-size:20px; pointer-events:none;
     }
 
     .wrap{max-width:var(--maxw);margin:0 auto;padding:28px 20px 64px}
@@ -261,7 +261,7 @@
 
     // PROJECT viewer — black bg, natural ratio, bigger image, working arrows + hit zones
     function renderProject(slug){
-      const p=(data.projects||[]).find(x=>x.slug===slug); if(!p) return renderNotFound(); document.body.style.background='#000'; const imgs=p.images||[];
+      const p=(data.projects||[]).find(x=>x.slug===slug); if(!p) return renderNotFound(); document.body.style.background='#000'; document.body.style.color= '#fff'; const imgs=p.images||[];
       app.innerHTML=`
         <div class="wrap">
           <a class="muted" href="#" style="display:inline-block;margin-bottom:8px">← All projects</a>
