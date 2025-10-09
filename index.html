@@ -233,7 +233,7 @@
     function renderProject(slug){
       const p = data.projects.find(x=>x.slug===slug);
       if(!p) return renderNotFound();
-      document.body.style.background = p.theme || getComputedStyle(document.documentElement).getPropertyValue('--bg');
+      document.body.style.background = '#000';
       const imgs = p.images;
       app.innerHTML = `
         <div class="wrap">
